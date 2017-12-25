@@ -5,7 +5,11 @@ import inspect
 def mydec(func):
     @functools.wraps(func)
     def w(*args, **kw):
-        print('hahah')
+        print('@@@' * 20)
+        print(dir(func))
+        print(repr(func))
+        print(func.__module__)
+        print(func.__annotations__)
         print(args, kw)
         x = inspect.signature(func)
         print('this is str(x)', str(x))
