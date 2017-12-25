@@ -1,32 +1,32 @@
 # -*- coding: utf-8 -*-
 import functools
 import inspect
+from inspect import Parameter
 
 def mydec(func):
     @functools.wraps(func)
     def w(*args, **kw):
-        print('hahah')
+        print('---' * 20)
         print(args, kw)
         x = inspect.signature(func)
         print('this is str(x)', str(x))
-        print(dir(x.parameters))
-        for name in x.parameters:
-            p = x.parameters[name]
-            # print(p, type(p))
-            print(p.name, p.default, p.kind, p.annotation)
+        data = {}
         for i, p in enumerate(x.parameters.values()):
-            print(i, p, type(p))
-        for i, p in enumerate(x.parameters):
-            print(i, p, type(p))
-        for m, n in x.parameters.items():
-            print(m, n)
-        print('x', x, type(x), dir(x))
+            print(i, p, p.kind)
+            if p.kind == Parameter.POSITIONAL_OR_KEYWORD:
+                data[p.name] = args[i]
+            elif p.kind == Parameter.VAR_POSITIONAL:
+                data[p.name] = args[i:]
+            elif p.kind == Parameter.KEYWORD_ONLY:
+                data[p.name] = p.default
+        data.update(kw)
+        print('this is data', data)
         return func(*args, **kw)
     return w
 
 
 @mydec
-def hello(a, *args, b=2, c=None, **kw):
+def hello(a, a2, *args, b=2, c=None, **kw):
     print(a, b, c)
 
 # print('1' * 30)
