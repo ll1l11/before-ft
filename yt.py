@@ -8,20 +8,20 @@ def function_params_to_dict(func, args, kw):
     sig = inspect.signature(func)
     result = {}
     for i, p in enumerate(sig.parameters.values()):
-        print(i, p, p.kind)
+        if p.name in kw:
+            result[p.name] = kw.pop(p.name)
+            continue
         if p.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD:
             if len(args) > i:
                 result[p.name] = args[i]
             else:
-                result[p.name] = kw.pop(p.name)
+                result[p.name] = p.default
         elif p.kind == inspect.Parameter.VAR_POSITIONAL:
             result[p.name] = args[i:]
         elif p.kind == inspect.Parameter.KEYWORD_ONLY:
             result[p.name] = p.default
         elif p.kind == inspect.Parameter.VAR_KEYWORD:
             result[p.name] = kw
-    print('this is kw', kw)
-    print('this is result', result)
     return result
 
 
@@ -35,10 +35,11 @@ def md(func):
 
 
 @md
-def f3(a, b, c=3, **kw):
-    print(a, b, c, kw)
+def f3(a, b, c=3, *x, **kw):
+    print(a, b, c, x, kw)
     pass
 
 
 # r = function_params_to_dict(f3, [], dict(a=1, b=5, c=7))
-f3(1, b=2, c=7, x=5)
+# f3(1, b=2, x=5)
+f3(1, 2, 3, 4, 5, z=3)
